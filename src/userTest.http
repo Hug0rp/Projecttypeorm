@@ -1,0 +1,26 @@
+get http://localhost:3000/api/users
+
+###
+
+post http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+    "firstName": "Marco Aurelio",
+    "lastName": "Hansen"
+
+}
+
+###
+
+DELETE  http://localhost:3000/api/users/4
+
+###
+
+patch  http://localhost:3000/api/users/3
+
+{
+    "firstname":"Marco",
+    "lastname":"Pollo"
+
+}
