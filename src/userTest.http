@@ -1,26 +1,32 @@
-get http://localhost:3000/api/users
+GET http://localhost:3000/api/users
+
+###
+GET http://localhost:3000/api/users/5
 
 ###
 
-post http://localhost:3000/api/users
+POST http://localhost:3000/api/users
 Content-Type: application/json
 
 {
-    "firstName": "Marco Aurelio",
-    "lastName": "Hansen"
-
+  "firstname": "Marco",
+  "lastname": "Pollo"
 }
 
 ###
 
-DELETE  http://localhost:3000/api/users/4
+DELETE http://localhost:3000/api/users/1
 
 ###
 
-patch  http://localhost:3000/api/users/3
+PATCH  http://localhost:3000/api/users/5
+Content-Type: application/json
 
 {
-    "firstname":"Marco",
-    "lastname":"Pollo"
-
+  "firstname": "Marco",
+  "lastname": "Pollo 2"
 }
+
+###
+
+PATCH http://localhost:3000/api/users/5/toggle

@@ -19,6 +19,26 @@ export class UserController{
           
         }
     }
+    async listById(req: Request, res: Response) {
+        try {
+          const id = Number(req.params.id);
+          if (isNaN(id)) {
+            res.status(400).json({ message: "ID inválido" });
+          }
+          const user = await this.userRepository.findOneBy({ id });
+          if (!user) {
+            res.status(404).json({ message: "Usuário não encontrado!" });
+          }
+          return res.json(user);
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            return res.status(400).json({ error: error.message });
+          }
+          return res
+            .status(500)
+            .json({ error: "Ocorreu um erro inesperado ao listar o usuário." });
+        }
+      }
 
     async update(req:Request, res:Response){
        try{ const id = Number(req.params.id)
@@ -54,6 +74,21 @@ export class UserController{
             return res.status(500).json({ error: "Ocorreu um erro inesperado ao criar o usuário."});
         }
     }
+
+    async listActive(req: Request, res:Response){
+        try{
+            const users = await this.userRepository.findBy({
+            isActive: true});
+            return res.json(users);
+        }
+        catch (error: unknown){
+            if (error instanceof Error){
+                return res.status(400).json({ error: error.message});
+            }
+            return res.status(500).json({ error: "Ocorreu um erro inesperado ao criar o usuário."});
+        }
+    }
+
     async delete(req: Request, res: Response ){
         try{
             const id = Number(req.params.id)
@@ -71,6 +106,33 @@ export class UserController{
             }
             return res.status(500).json({message: "Um erro desconhecido ocorreu!"})
         }
+        
+    }
+
+    async toggleActive(req: Request, res:Response){
+        try{
+            const id = Number(req.params.id)
+            if(isNaN(id)){
+                res.status(400).json({message: "ID inválido!"})
+                const user = await this.userRepository.findOneBy({id})
+                if(!user){
+                    res.status(404).json({message: "Usuário não encontrado"})
+                }
+                user.isActive = !user.isActive;
+                await this.userRepository.save(user);
+                return res.json({
+                    message: `Usuário ${user.isActive ? "ativado" : "desativado"}
+                    com sucesso.`,
+                    user,
+                })
+            }
+            }catch (error: unknown){
+            if( error instanceof Error){
+                return res.status(400).json({ error: error.message})
+            }
+            return res.status(500).json({message: "Um erro desconhecido ocorreu ao mudar o status!"})
+        
+
     }
    
-}
+}}
