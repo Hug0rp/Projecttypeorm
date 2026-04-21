@@ -3,11 +3,13 @@ import express, { Application } from "express"
 import { AppDataSource } from "./data-source";
 import { userRoutes } from "./routes/userRoutes";
 import { postRoutes } from "./routes/postRoutes";
+import { errorMiddleware } from "./middlewares/errorMiddleware";
 
 const app: Application = express();
 app.use(express.json());
-app.use("/api/users", userRoutes)
-app.use("/api/posts", postRoutes)
+app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
+app.use(errorMiddleware);
 AppDataSource.initialize().then(
     ()=> {
         console.log("Banco conectado!");

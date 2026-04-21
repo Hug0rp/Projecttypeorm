@@ -1,54 +1,46 @@
 import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { BadRequestError, NotFoundError } from "../helpers/apiError";
 
 export class UserController{
     private userRepository = AppDataSource.getRepository(User);
 
-    async create(req: Request, res: Response){
+    create = async(req: Request, res: Response, next: NextFunction) => {
         try{
             const {firstname, lastname} = req.body;
             const newUser = this.userRepository.create({firstname, lastname});
             await this.userRepository.save(newUser)
             return res.status(201).json({newUser});
         }catch( error: unknown){
-            if(error instanceof Error){
-                return res.status(400).json({error: error.message});
-            }
-            return res.status(500).json({ error: "Ocorreu um erro inesperado ao criar o usuário."});
-          
+            next(error);
         }
     }
-    async listById(req: Request, res: Response) {
+    listById = async (req: Request, res: Response, next: NextFunction) => {
         try {
           const id = Number(req.params.id);
           if (isNaN(id)) {
-            res.status(400).json({ message: "ID inválido" });
+            throw new BadRequestError("Id inválido!")
           }
           const user = await this.userRepository.findOneBy({ id });
           if (!user) {
-            res.status(404).json({ message: "Usuário não encontrado!" });
+            throw new NotFoundError("Usuário não encontrado!");
           }
           return res.json(user);
         } catch (error: unknown) {
-          if (error instanceof Error) {
-            return res.status(400).json({ error: error.message });
-          }
-          return res
-            .status(500)
-            .json({ error: "Ocorreu um erro inesperado ao listar o usuário." });
+            next(error);
         }
       }
 
-    async update(req:Request, res:Response){
+    update = async(req:Request, res:Response, next: NextFunction) => {
        try{ const id = Number(req.params.id)
         const {firstname, lastname} = req.body
         if(isNaN(id)){
-            res.status(400).json({message: "id inválido!"})
+            throw new BadRequestError("ID inválido")
         }
         const user = await this.userRepository.findOneBy({id});
         if(!user){
-            res.status(404).json({ message: "Usuário não encontrado!"});
+            throw new NotFoundError("Usuário não encontrado");
         }
         user.firstname = firstname?? user.firstname;
         user.lastname = lastname?? user.lastname;
@@ -63,33 +55,28 @@ export class UserController{
     }
 
 
-    async list(req: Request, res: Response){
+    async list(req: Request, res: Response, next: NextFunction){
         try {
             const users = await this.userRepository.find();
             return res.json(users);
         } catch (error: unknown){
-            if (error instanceof Error){
-                return res.status(400).json({ error: error.message});
-            }
-            return res.status(500).json({ error: "Ocorreu um erro inesperado ao criar o usuário."});
+            next(error)
+
         }
     }
 
-    async listActive(req: Request, res:Response){
+    listActive = async (req: Request, res:Response, next: NextFunction) => {
         try{
             const users = await this.userRepository.findBy({
             isActive: true});
             return res.json(users);
         }
         catch (error: unknown){
-            if (error instanceof Error){
-                return res.status(400).json({ error: error.message});
-            }
-            return res.status(500).json({ error: "Ocorreu um erro inesperado ao criar o usuário."});
+         next(error)
         }
     }
 
-    async delete(req: Request, res: Response ){
+   delete = async(req: Request, res: Response, next: NextFunction ) => {
         try{
             const id = Number(req.params.id)
             if(isNaN(id)){
@@ -113,10 +100,10 @@ export class UserController{
         try{
             const id = Number(req.params.id)
             if(isNaN(id)){
-                res.status(400).json({message: "ID inválido!"})
+              throw
                 const user = await this.userRepository.findOneBy({id})
                 if(!user){
-                    res.status(404).json({message: "Usuário não encontrado"})
+                    throw new NotFoundError("Usuário não encontrado")
                 }
                 user.isActive = !user.isActive;
                 await this.userRepository.save(user);
@@ -128,7 +115,7 @@ export class UserController{
             }
             }catch (error: unknown){
             if( error instanceof Error){
-                return res.status(400).json({ error: error.message})
+               
             }
             return res.status(500).json({message: "Um erro desconhecido ocorreu ao mudar o status!"})
         
