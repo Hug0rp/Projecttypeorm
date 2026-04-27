@@ -1,11 +1,15 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Post } from "./Post";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @Column("varchar", {unique: true})
+  @IsEmail({},{message: "O e-mail fornecido não é válido" })
+  email!: string;
 
   @Column("varchar")
   @IsNotEmpty({ message: "Primeiro nome é obrigatório!" })

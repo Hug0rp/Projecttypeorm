@@ -9,9 +9,14 @@ export class UserController {
   private userRepository = AppDataSource.getRepository(User);
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { email } = req.body;
       const { firstName, lastName } = req.body;
       const newUser = this.userRepository.create({ firstName, lastName });
+      const emailExists = await this.userRepository.findOneBy({ email });
       const errors = await validate(newUser);
+      if(emailExists){
+        throw new BadRequestError("E-mail ja esta em uso!")
+      }
       if (errors.length > 0) {
         const formattedErrors = formatErrors(errors);
         throw new BadRequestError("Falha de validação", formattedErrors);
@@ -27,6 +32,11 @@ export class UserController {
     try {
       const id = Number(req.params.id);
       const { firstName, lastName } = req.body;
+      const { email } = req.body;
+      const emailExists = await this.userRepository.findOneBy({ email });
+      if(emailExists){
+        throw new BadRequestError("E-mail ja esta em uso!")
+      }
       if (isNaN(id)) {
         throw new BadRequestError("ID inválido");
       }
