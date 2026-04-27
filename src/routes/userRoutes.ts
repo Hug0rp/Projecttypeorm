@@ -2,14 +2,14 @@ import { Router } from "express";
 import { UserController } from "../controller/UserController";
 
 const router = Router();
-const userController = new UserController();
+const userControler = new UserController();
 
-router.post("/", userController.create);
-router.get("/", userController.list)
-router.delete("/:id", userController.delete);
-router.patch("/:id", userController.update);
-router.get("/:id", userController.listById);
-router.get("/active", userController.listActive);
-router.patch("/:id/toggle", (req, res) => userController.toggleActive(req, res));
+router.post("/", userControler.create);
+router.patch("/:id/toggle", userControler.toggleActive);
+router.patch("/:id", userControler.update);
+router.get("/", userControler.list);
+router.get("/active", userControler.listActive);
+router.get("/:id", userControler.listById);
+router.delete("/:id", userControler.delete);
 
 export const userRoutes = router;
