@@ -9,19 +9,18 @@ export class UserController {
   private userRepository = AppDataSource.getRepository(User);
   create = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email } = req.body;
-      const { firstName, lastName } = req.body;
-      const newUser = this.userRepository.create({ firstName, lastName });
+      const { firstName, lastName, email } = req.body;
       const emailExists = await this.userRepository.findOneBy({ email });
-      const errors = await validate(newUser);
       if(emailExists){
-        throw new BadRequestError("E-mail ja esta em uso!")
-      }
-      if (errors.length > 0) {
-        const formattedErrors = formatErrors(errors);
-        throw new BadRequestError("Falha de validação", formattedErrors);
-      }
-      await this.userRepository.save(newUser);
+          throw new BadRequestError("E-mail ja esta em uso!")
+        }
+        const newUser = this.userRepository.create({ firstName, lastName, email });
+        const errors = await validate(newUser);
+        if (errors.length > 0) {
+            const formattedErrors = formatErrors(errors);
+            throw new BadRequestError("Falha de validação", formattedErrors);
+        }
+        await this.userRepository.save(newUser);
       return res.status(201).json(newUser);
     } catch (error: unknown) {
       next(error);

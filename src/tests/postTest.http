@@ -4,9 +4,21 @@ Content-Type: application/json
 {
   "title": "Meu terceiro post",
   "content": "conteúdo do post",
-  "userId": 9999
+  "userId": 11
 }
 
 ###
 
 GET http://localhost:3000/api/posts
+
+###
+
+POST http://localhost:3000/api/posts
+Content-Type: application/json
+
+{
+  "title": "",
+  "content": "conteúdo do post",
+  "userId": 99
+}
+
